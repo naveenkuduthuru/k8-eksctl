@@ -1,56 +1,15 @@
-module "ec2_instance" {
+module "workstation" {
   source  = "terraform-aws-modules/ec2-instance/aws"
 
-  name = "workstation-eksctl"
-  ami = data.aws_ami.ec2.id
-  instance_type          = "t2.micro"
-  #key_name               = "user1"
-  #monitoring             = true
-  vpc_security_group_ids = [aws_security_group.allow_eksctl.id]
-  subnet_id              = "subnet-0e10e3dab4d05c55c" #replace your default subnet id
+  name = "workstation"
+
+  instance_type          = "t3.micro"
+  vpc_security_group_ids = [var.sg_id]
+  # convert StringList to list and get first element
+  subnet_id = var.public_subnet_id
+  ami = data.aws_ami.ami_info.id
   user_data = file("workstation.sh")
   tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
-}
-
-resource "aws_security_group" "allow_eksctl" {
-  name        = "allow_eksctl"
-  description = "created for eksctl"
-  tags = {
-    Name = "allow_eksctl"
-  }
-
-  ingress {
-    description = "all ports"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-}
-
-
-data "aws_ami" "ec2"{
-    owners = ["973714476881"]
-    most_recent      = true
-
-    filter {
-        name   = "name"
-        values = ["RHEL-9-DevOps-Practice"]
+        Name = "workstation"
     }
-
-    filter {
-        name   = "root-device-type"
-        values = ["ebs"]
-    }
-
 }

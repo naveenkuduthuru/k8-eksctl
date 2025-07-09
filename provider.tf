@@ -8,7 +8,7 @@ terraform {
 
   backend "s3" {
     bucket = "daws90s-remote-state"
-    key    = "eksctl"
+    key    = "k8-eksctl"
     region = "us-east-1"
     dynamodb_table = "daws90s-locking"
   }
